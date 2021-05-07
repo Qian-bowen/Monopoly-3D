@@ -5,19 +5,19 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Dice/scenes/Demo/demo.unity
     guid: 9bffaf85fa8153c4ba4e72b19277f390
-  - enabled: 1
-    path: Assets/Scenes/Dice.unity
-    guid: 9fc0d4010bbf28b4594072e72b8655ab
-  - enabled: 1
-    path: Assets/Scenes/login.unity
-    guid: 0e29131cb2ce529449cfb468d5a10602
   - enabled: 1
     path: Assets/Scenes/Game.unity
     guid: 3b65ff5f53143524b975525d921b8fa8
   - enabled: 1
+    path: Assets/Scenes/login.unity
+    guid: 0e29131cb2ce529449cfb468d5a10602
+  - enabled: 1
     path: Assets/Scenes/Editor.unity
     guid: 5fed0653395b097448327cca1f37edf3
+  - enabled: 1
+    path: Assets/Scenes/Dice.unity
+    guid: 9fc0d4010bbf28b4594072e72b8655ab
   m_configObjects: {}

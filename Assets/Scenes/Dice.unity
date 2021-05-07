@@ -135,8 +135,8 @@ GameObject:
   - component: {fileID: 178738002}
   - component: {fileID: 178738001}
   - component: {fileID: 178738000}
-  - component: {fileID: 178737999}
   - component: {fileID: 178737998}
+  - component: {fileID: 178737999}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -166,7 +166,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 178737997}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3679cfc1e8a923a4a8f70f1aa2096207, type: 3}
+  m_Script: {fileID: 11500000, guid: 5fbb00158bb20f1498e3814b0d0868cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &178738000
@@ -937,7 +937,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 178737999}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: test, Assembly-CSharp
         m_MethodName: press_button
         m_Mode: 1

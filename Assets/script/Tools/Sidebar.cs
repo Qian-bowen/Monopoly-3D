@@ -15,23 +15,7 @@ public class Sidebar : MonoBehaviour, IPointerDownHandler
 {
     private bool ishide=true;
 
-    private void Awake() {
-
-
-
-    }
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
-   public void OnPointerDown (PointerEventData eventData){
+    public void OnPointerDown (PointerEventData eventData){
         //if is hide, move outside
         if(ishide)
         {

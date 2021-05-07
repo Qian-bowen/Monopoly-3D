@@ -28,7 +28,6 @@ public class Room : MonoBehaviour
 
     InputField input_room;
 
-    SocketMsg socket;
 
     bool valid_room=false;
 
@@ -43,9 +42,8 @@ public class Room : MonoBehaviour
 
         input_room=GameObject.Find("input_room").GetComponent<InputField>();
 
-        socket=new SocketMsg();
-        socket.set_callback(this.get_socket_json);
-        socket.start_server();
+        GameGlobals.socketWrapper.set_callback(this.get_socket_json);
+        //GameGlobals.socketWrapper.start_server();
     }
     // Start is called before the first frame update
     void Start()
@@ -76,7 +74,7 @@ public class Room : MonoBehaviour
 
     void init_info_table()
     {
-        GameObject table = GameObject.Find("Room_Canvas/room_panel/room_table");
+        GameObject table = GameObject.Find("all_panel/room_panel/room_table");
         for (int i = 0; i < info_line; i++)
         {
             GameObject row = Instantiate(line, table.transform.position-i*line.transform.position, table.transform.rotation) as GameObject;
@@ -113,13 +111,13 @@ public class Room : MonoBehaviour
         rid=Int32.Parse(rid_str);
         RoomJson roomJson=new RoomJson("match",uid,rid);
         string rj=Json.SaveToString(roomJson);
-        socket.send_message(rj+"$_");
+        GameGlobals.socketWrapper.send_message(rj);
     }
 
     private void get_socket_json()
     {
         Debug.Log("call back successfully");
-        string get_json=socket.get_received_json();
+        string get_json=GameGlobals.socketWrapper.get_received_json();
         RoomAuthJson ra=RoomAuthJson.CreateFromJSON(get_json);
 
         //if(ra.authentic==true&&ra.user_id==GameGlobals.user_id)
@@ -128,8 +126,6 @@ public class Room : MonoBehaviour
             //set user_id
             GameGlobals.room_id=ra.room_id;
             Debug.Log("final receive str:"+ GameGlobals.room_id);
-            //close socket
-            socket.close_socket();
             valid_room=true;
         }
         else
@@ -144,7 +140,7 @@ public class Room : MonoBehaviour
     }
 
     private void OnDestroy() {
-        socket.close_socket();
+        //socket.close_socket();
     }
 
 }

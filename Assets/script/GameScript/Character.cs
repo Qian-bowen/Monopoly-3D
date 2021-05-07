@@ -8,6 +8,7 @@ namespace CharacterNS
 {
     public class Character : MonoBehaviour
     {    
+        private int player_id=-1;
         //public GameObject me;//default player
         private GameObject me2;
         float step_size;
@@ -16,9 +17,13 @@ namespace CharacterNS
         private void Awake() {
             
         }
-
-        public void init_character(charType ctype,float x,float y,float z)
+        public int get_player_id()
         {
+            return player_id;
+        }
+        public void init_character(int p_id,charType ctype,float x,float y,float z)
+        {
+            player_id=p_id;
             step_size=1;
             Vector3 init_pos=new Vector3(x,y,z);
             GameObject me;

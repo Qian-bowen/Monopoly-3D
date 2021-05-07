@@ -84,7 +84,7 @@ namespace JsonNS
 
     public class RoomAuthJson:Json
     {
-        //public bool authentic;
+        public bool authentic;
         public int user_id;
         public int room_id;
 
@@ -94,12 +94,6 @@ namespace JsonNS
         }
 
     }
-
-    // public class PlayJson:Json
-    // {
-    //     public int user_id;
-    //     public int action;
-    // }
 
     public class GameMsgSendJson:Json
     {
@@ -124,7 +118,8 @@ namespace JsonNS
     [Serializable]
     public class PlayerMsg:Json
     {
-        public int playernum;
+        public int user_id;
+        public int player_type;//added
         public int pos_x;
         public int pos_y;
         public int cash;
@@ -134,14 +129,14 @@ namespace JsonNS
         {
             return JsonUtility.FromJson<PlayerMsg>(jsonString);
         }
-        public PlayerMsg(int pn,int px,int py,int csh,int cp,List<int> cd)
+        public PlayerMsg(int pn,int pt,int px,int py,int csh,int cp)
         {
-            playernum=pn;
+            user_id=pn;
+            player_type=pt;
             pos_x=px;
             pos_y=py;
             cash=csh;
             cp=coupon;
-            cards=cd;
         }
     }
 
@@ -155,12 +150,14 @@ namespace JsonNS
         public int map_y;
         public int change;  
 
+        public int turn_player;
+
         public static GameMsgRecJson CreateFromJSON(string jsonString)
         {
             return JsonUtility.FromJson<GameMsgRecJson>(jsonString);
         }
 
-        public GameMsgRecJson(gameStatus gs,List<PlayerMsg> ps ,string info,int mx,int my,int cg)
+        public GameMsgRecJson(gameStatus gs,List<PlayerMsg> ps ,string info,int mx,int my,int cg,int tp)
         {
             game_status=gs;
             player_group=ps;
@@ -168,6 +165,7 @@ namespace JsonNS
             map_x=mx;
             map_y=my;
             change=cg;
+            turn_player=tp;
         }   
     }
 }

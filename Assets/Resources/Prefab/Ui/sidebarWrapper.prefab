@@ -364,6 +364,8 @@ GameObject:
   - component: {fileID: 7429251239694916056}
   - component: {fileID: 7429251239694916057}
   - component: {fileID: 625834552}
+  - component: {fileID: 9182972970919268836}
+  - component: {fileID: 7799633822821346519}
   m_Layer: 5
   m_Name: buttonBar
   m_TagString: Untagged
@@ -393,7 +395,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -391, y: 2}
+  m_AnchoredPosition: {x: -256, y: 2}
   m_SizeDelta: {x: 100, y: 300}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7429251239694916056
@@ -446,6 +448,50 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 05265006ced1d2d4398c5a917be8c0ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!223 &9182972970919268836
+Canvas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7429251239694916055}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_RenderMode: 2
+  m_Camera: {fileID: 0}
+  m_PlaneDistance: 100
+  m_PixelPerfect: 0
+  m_ReceivesEvents: 1
+  m_OverrideSorting: 0
+  m_OverridePixelPerfect: 0
+  m_SortingBucketNormalizedSize: 0
+  m_AdditionalShaderChannelsFlag: 0
+  m_SortingLayerID: 0
+  m_SortingOrder: 0
+  m_TargetDisplay: 0
+--- !u!114 &7799633822821346519
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7429251239694916055}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_UiScaleMode: 0
+  m_ReferencePixelsPerUnit: 100
+  m_ScaleFactor: 1
+  m_ReferenceResolution: {x: 800, y: 600}
+  m_ScreenMatchMode: 0
+  m_MatchWidthOrHeight: 0
+  m_PhysicalUnit: 3
+  m_FallbackScreenDPI: 96
+  m_DefaultSpriteDPI: 96
+  m_DynamicPixelsPerUnit: 1
+  m_PresetInfoIsWorld: 0
 --- !u!1 &7429251239749846099
 GameObject:
   m_ObjectHideFlags: 0
@@ -579,7 +625,6 @@ GameObject:
   - component: {fileID: 7429251240459176905}
   - component: {fileID: 7429251240459176902}
   - component: {fileID: 7429251240459176903}
-  - component: {fileID: 7429251240459176907}
   m_Layer: 5
   m_Name: sidebar
   m_TagString: Untagged
@@ -668,20 +713,6 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
---- !u!114 &7429251240459176907
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7429251240459176900}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 04095161cc1391b409b74e79c60a0fb8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  up: {fileID: 7429251241108770406}
-  down: {fileID: 7429251239675983535}
 --- !u!1 &7429251240557690049
 GameObject:
   m_ObjectHideFlags: 0

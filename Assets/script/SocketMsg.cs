@@ -17,8 +17,8 @@ namespace SocketMsgNS
         Socket client;
         Thread receive_thread;
         TcpClient conn;
-        string server_ip="127.0.0.1";//121.5.140.31
-        int server_port=5000;
+        string server_ip;//121.5.140.31
+        int server_port;
 
         string get_json;
 
@@ -27,6 +27,12 @@ namespace SocketMsgNS
         public void set_callback(get_socket_json gsj)
         {
             this.gsj_addr=gsj;
+        }
+
+        public void set_server(string ip,int port)
+        {
+            server_port=port;
+            server_ip=ip;
         }
 
         public void start_server()
@@ -44,12 +50,13 @@ namespace SocketMsgNS
 
         public void close_socket() {
  
-            client.Close();
+            //client.Close();
 
         }
 
         public void send_message(string jsonstring)
         {
+            jsonstring+="$_";
             
             Debug.Log("send:"+jsonstring);
 
