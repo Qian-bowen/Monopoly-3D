@@ -7,6 +7,8 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Text;
+using System.IO;
+using System.Text;
 
 using JsonNS;
 
@@ -94,7 +96,7 @@ namespace SocketMsgNS
                     int read_byte=0;
                     do{
                         read_byte=stream.Read(bytes,0,bytes.Length);
-                        jsonstring.Append(Encoding.ASCII.GetString(bytes,0,read_byte));
+                        jsonstring.Append(Encoding.UTF8.GetString(bytes,0,read_byte));
                     }
                     while(stream.DataAvailable);
                     

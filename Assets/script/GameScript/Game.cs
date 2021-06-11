@@ -30,24 +30,28 @@ public class Game : MonoBehaviour
     private Button card_btn;
     private Button close_card_btn;
     private Button next_turn_btn;
+    private Button choice_yes,choice_no;
 
     private Map map;
-    List<Character> char_group=new List<Character>();
+    private bool thread_init=false;
+    private GameMsgRecJson recJson;
 
     int dice_val=0;
 
-    private void Awake() {
+    private void Start() {
+        //new socket
+        GameGlobals.socketWrapper.set_callback(this.get_socket_json);  
+        init_all();
+    }
+
+    void init_all()
+    {
         //init prefab according to initial status receive
         
         //reset name to remove"(clone)"
         player_card=Resources.Load("Prefab/Ui/card") as GameObject;
         GameObject new_player_card=Instantiate(player_card,GameObject.Find("game").transform);
         new_player_card.name=player_card.name;
-
-        //init prefab
-        // sidebar=Resources.Load("Prefab/Ui/sidebarWrapper") as GameObject;
-        // GameObject new_sidebar=Instantiate(sidebar,GameObject.Find("game").transform);
-        // new_sidebar.name=sidebar.name;
 
         //init game map
         map= gameObject.AddComponent<Map>();
@@ -71,67 +75,20 @@ public class Game : MonoBehaviour
         close_card_btn = GameObject.Find("closeCard").GetComponent<Button>();
         close_card_btn.onClick.AddListener(close_card);
 
+        choice_yes = GameObject.Find("yes").GetComponent<Button>();
+        choice_no = GameObject.Find("no").GetComponent<Button>();
+
         //disable card canvas
         GameObject.Find("card").GetComponent<Canvas>().enabled=false;
-
-        //disable some button
-        if(GameGlobals.turn.turn_roll_dice==true)
-        {
-            GameObject.Find("roll").GetComponent<Button>().enabled=false;
-        }
-
-        //new socket
-        GameGlobals.socketWrapper.set_callback(this.get_socket_json);
+        GameObject.Find("choose_panel").GetComponent<Canvas>().enabled=false;
 
         //test_write_card();
 
         load_player_card();
+        //init_character();
         //test function
-        test_global_char_set();
-
-        
-    }
-    
-    // Start is called before the first frame update
-    void Start()
-    {
-        //ch1.move_character(0,5);
-
-    }
-
-
-
-    void test_global_char_set()
-    {
-        GameGlobals.user_id=1;
-        GameGlobals.room_id=1;
-        GameGlobals.turn.turn_player_id=1;
-        // PlayerInfo p1=new PlayerInfo(charType.CHAR1,0,0,0,100,100);
-        // PlayerInfo p2=new PlayerInfo(charType.CHAR2,0,10,1,100,100);
-        // PlayerInfo p3=new PlayerInfo(charType.CHAR3,15,0,3,100,100);
-        // PlayerInfo p4=new PlayerInfo(charType.CHAR4,15,10,5,100,100);
-        // List<PlayerInfo> pg=new List<PlayerInfo>{p1,p2,p3,p4};
-        // GameGlobals.player_group=pg;
-
-        PlayerMsg s1=new PlayerMsg(1,(int)charType.CHAR1,0,0,100,100);
-        PlayerMsg s2=new PlayerMsg(2,(int)charType.CHAR2,0,10,100,100);
-        PlayerMsg s3=new PlayerMsg(3,(int)charType.CHAR3,15,0,100,100);
-        PlayerMsg s4=new PlayerMsg(4,(int)charType.CHAR4,15,10,100,100);
-        List<PlayerMsg> playerMsgs=new List<PlayerMsg>{s1,s2,s3,s4};
-        GameMsgRecJson recJson=new GameMsgRecJson(gameStatus.START,playerMsgs,"hello",0,0,0,1);
-
-        game_reset_all_global(recJson);
-        //handle game status such as win the game
-        game_status_handler(recJson.game_status);
-        //handle turn
-        game_turn_handler(recJson.turn_player);  
-        if(!char_group.Any())   
-        {
-            init_character();
-        }
-        
-        //flush info on screen
-        flush_global_info();
+        //test_global_char_set();
+        //character_test();
     }
 
     void test_write_card()
@@ -144,16 +101,78 @@ public class Game : MonoBehaviour
         GameGlobals.card_pool.Add(c3);
     }
 
+    void character_test()
+    {
+        int pos_x=0;
+        int pos_y=0;
+        GameObject ch=init_single_character((charType)1,pos_x,0f,pos_y);
+        ch.AddComponent<Character>();
+        ch.GetComponent<Character>().set_character(1,ch,0,0);//modified remove
+    }
+
     void init_character()
     {
-        foreach(PlayerInfo player in GameGlobals.player_group)
+        //check whether character is already exist
+        if(GameObject.Find("character1")!=null)
+            return;
+        foreach(PlayerInfo player in GameGlobals.playergroup)
         {
-            Character ch=GameObject.Find("game").AddComponent<Character>();
+            Debug.Log("init character,id:"+player.user_id);
+            Debug.Log("init character,playernum:"+player.playernum);
             int pos_x=player.pos_x;
             int pos_y=player.pos_y;
-            ch.init_character(player.user_id,player.player_type,2f*(pos_x-1),0f,2f*(pos_y-1));
-            char_group.Add(ch);
+            GameObject ch=init_single_character((charType)player.playernum-1,player.pos_x,0f,player.pos_y);
+            ch.AddComponent<Character>();
+            //ch.GetComponent<Character>().set_character(player.user_id,ch,pos_x,pos_y);//modified remove
         }
+    }
+
+    private GameObject init_single_character(charType ctype,float x,float y,float z)
+    {
+        Debug.Log("init single");
+        Vector3 init_pos=new Vector3(0f,0f,0f);
+        if (x == 0) init_pos = new Vector3(-2f, 0f, 2 * z);
+        if (x == 14) init_pos = new Vector3(30f, 0f, 2f * z);
+        if (z == 0) init_pos = new Vector3(2 * x, 0f, -2f); 
+        if (z == 9) init_pos = new Vector3(2 * x, 0f, 20f); 
+        
+        string char_path="";
+        switch(ctype)
+        {
+            case charType.CHAR1:
+            {
+                char_path="Prefab/Character/character1";
+                break;
+            }
+            case charType.CHAR2:
+            {
+                char_path="Prefab/Character/character2";
+                break;
+            }
+            case charType.CHAR3:
+            {
+                char_path="Prefab/Character/character3";
+                break;
+            }
+            case charType.CHAR4:
+            {
+                char_path="Prefab/Character/character4";
+                break;
+            }
+            default:
+            {
+                char_path="Prefab/Character/character4";
+                break;
+            }
+
+        }
+        GameObject me;
+        GameObject character;
+        character=Resources.Load(char_path, typeof(GameObject)) as GameObject;       
+        Quaternion rot = Quaternion.Euler(0, 0, 0);
+        me=Instantiate(character,init_pos,rot);
+        me.name="character"+((int)ctype+1).ToString();
+        return me;
     }
 
     void load_player_card()
@@ -183,6 +202,7 @@ public class Game : MonoBehaviour
 
     void show_player_card()
     {
+
         GameObject.Find("card").GetComponent<Canvas>().enabled=true;     
     }
 
@@ -213,9 +233,7 @@ public class Game : MonoBehaviour
 
     void test_button()
     {
-        flush_map_block(0,1,0);     
-        flush_map_block(0,1,1);  
-        flush_map_block(0,1,2);  
+        make_choice_handler();
     }
 
     void next_turn()
@@ -228,16 +246,39 @@ public class Game : MonoBehaviour
         else if(GameGlobals.turn.turn_player_id==GameGlobals.user_id&&
         GameGlobals.turn.turn_roll_dice==false)
         {
-            show_info("PLEASE ROLL DICE",1.5f);
+            show_info("PLEASE ROLL DICE FIRST",1.5f);
             return;
         }
 
         //construct socket string
         //send the dice number rolled
-        GameMsgSendJson game_json=new GameMsgSendJson(inputType.GIVE_DICE_NUM,true,GameGlobals.turn.num);
-        string game_str=Json.SaveToString(game_json);
+        int cur_turn_idx=GameGlobals.turn.action_idx;
+        string game_str="";
+        if(cur_turn_idx%3==0)
+        {
+            GameMsgSendJson tmp_game_json=new GameMsgSendJson(inputType.GIVE_DICE_NUM,true,GameGlobals.turn.num);
+            game_str=Json.SaveToString(tmp_game_json);
+            GameGlobals.turn.action_idx++;
+        }
+        //make choice
+        else if(cur_turn_idx%3==1)
+        {
+            GameMsgSendJson tmp_game_json=new GameMsgSendJson(inputType.GIVE_CHOICE,GameGlobals.turn.choice,GameGlobals.turn.num);
+            game_str=Json.SaveToString(tmp_game_json);
+            GameGlobals.turn.action_idx++;
+        }
+        //choose card
+        else if(cur_turn_idx%3==2)
+        {
+            GameMsgSendJson tmp_game_json=new GameMsgSendJson(inputType.GIVE_CARD_NUM,true,GameGlobals.turn.num);
+            game_str=Json.SaveToString(tmp_game_json);
+
+            //one turn end and reset
+            GameGlobals.turn.action_idx=0;
+            reset_game_turn_globals();
+        }
+ 
         GameGlobals.socketWrapper.send_message(game_str);
-        reset_game_globals();
     }
 
     //callback function, parse GameMsgRecJson
@@ -245,30 +286,60 @@ public class Game : MonoBehaviour
     {
         Debug.Log("call back successfully");
         string get_json=GameGlobals.socketWrapper.get_received_json();
-        GameMsgRecJson recJson=GameMsgRecJson.CreateFromJSON(get_json);
-        //reset game globals
-        game_reset_all_global(recJson);
+        recJson=GameMsgRecJson.CreateFromJSON(get_json);
+        
+        thread_init=true;
+    }
+
+    private void Update() {
+        if(thread_init==true)
+        {
+            Debug.Log("init in main thread");
+            main_thread_init();
+            thread_init=false;
+        }
+    }
+
+    private void main_thread_init()
+    {
+        game_reset_all_global();
+        //show rec message
+        string rec_info=recJson.information;
+        Debug.Log(rec_info);
+        show_info(rec_info,2.5f);
         //handle game status such as win the game
         game_status_handler(recJson.game_status);
         //handle turn
-        game_turn_handler(recJson.turn_player);  
-        if(!char_group.Any())   
-        {
-            init_character();
-        }
-        
+        game_turn_handler(recJson.playernum);     
         //flush info on screen
         flush_global_info();
     }
 
-    void game_reset_all_global(GameMsgRecJson recJson)
+    void log_rec_msg()
     {
+        Debug.Log("game_status:"+(int)recJson.game_status);
+        foreach(PlayerMessage player in recJson.playergroup)
+        {
+            Debug.Log("user_type(num):"+player.playernum+" pos_x:"+player.pos_x+" pos_y:"+player.pos_y);
+            // Debug.Log("type:"+player.playernum);
+            // Debug.Log("pos_x:"+player.pos_x);
+            // Debug.Log("pos_y:"+player.pos_y);
+            // Debug.Log("cash:"+player.cash);
+            // Debug.Log("coupon:"+player.coupon);
+        }
+    }
+
+    void game_reset_all_global()
+    {
+        log_rec_msg();
         //set turn player id
-        GameGlobals.turn.turn_player_id=recJson.turn_player;
+        GameGlobals.turn.turn_player_id=recJson.playernum;
+        Debug.Log("cur turn player id:"+GameGlobals.turn.turn_player_id);
         //set player info
-        game_reset_player(recJson.player_group);
+        game_reset_player(recJson.playergroup);
+
         //set palyer money
-        foreach(PlayerInfo player in GameGlobals.player_group)
+        foreach(PlayerInfo player in GameGlobals.playergroup)
         {
             if(player.user_id==GameGlobals.user_id)
             {
@@ -281,8 +352,9 @@ public class Game : MonoBehaviour
         int update_map_y=recJson.map_y;
         changeType change=(changeType)recJson.change;  
         game_change_handler(update_map_x,update_map_y,change);   
-        
     }
+
+
 
     void roll_dice()
     {
@@ -290,14 +362,6 @@ public class Game : MonoBehaviour
         SceneManager.LoadScene("Dice");       
     }
 
-    private void OnEnable() {
-        if(GameGlobals.turn.turn_roll_dice==true)
-        {
-            string info="roll: "+GameGlobals.turn.num;
-            Debug.Log(info);
-            show_info(info,1.5f);    
-        }        
-    }
 
     IEnumerator wait_value(float sec)
     {
@@ -317,26 +381,17 @@ public class Game : MonoBehaviour
         switch(ct)
         {
             case changeType.LEVEL_UP:
-            {
-                
-                foreach(BlockInfo block in GameGlobals.map)
-                {
-                    if(block.pos_x==map_x&&block.pos_y==map_y)
-                    {
-                        flush_map_block(block.pos_x,block.pos_y,(int)block.type+1);
-                    }
-                }
+            { 
+                BlockInfo block=GameGlobals.map[map_x][map_y];
+                block.type=(BLOCK_TYPE)((int)block.type+1);
+                flush_map_block(block.pos_x,block.pos_y,(int)block.type+1);
                 break;
             }
             case changeType.LEVEL_DOWN:
             {
-                foreach(BlockInfo block in GameGlobals.map)
-                {
-                    if(block.pos_x==map_x&&block.pos_y==map_y)
-                    {
-                        flush_map_block(block.pos_x,block.pos_y,(int)block.type-1);
-                    }
-                }
+                BlockInfo block=GameGlobals.map[map_x][map_y];
+                block.type=(BLOCK_TYPE)((int)block.type-1);
+                flush_map_block(block.pos_x,block.pos_y,(int)block.type-1);
                 break;
             }
             case changeType.NO_CHANGE:
@@ -349,63 +404,102 @@ public class Game : MonoBehaviour
     /*
     * move player position and map 
     */
-    void game_reset_player(List<PlayerMsg> player_group)
+    void game_reset_player(List<PlayerMessage> playergroup)
     {
-        //if player_group is empty
-        if(!GameGlobals.player_group.Any())
+        //if playergroup is empty
+        if(!GameGlobals.playergroup.Any())
         {
-            foreach(PlayerMsg playerMsg in player_group)
+            foreach(PlayerMessage playerMsg in playergroup)
             {
                 PlayerInfo cur_player=new PlayerInfo();
-                cur_player.player_type=(charType)playerMsg.player_type;
+                cur_player.playernum=playerMsg.playernum;
                 cur_player.user_id=playerMsg.user_id;
                 cur_player.pos_x=playerMsg.pos_x;
                 cur_player.pos_y=playerMsg.pos_y;
                 cur_player.cash=playerMsg.cash;
                 cur_player.coupon=playerMsg.coupon;
 
-                GameGlobals.player_group.Add(cur_player);
+                GameGlobals.playergroup.Add(cur_player);
             }
-            return;
         }
-        //if not empty just modified
-        foreach(PlayerMsg playerMsg in player_group)
+        else
         {
-            foreach(PlayerInfo player in GameGlobals.player_group)
+            //if not empty just modified
+            foreach(PlayerMessage playerMsg in playergroup)
             {
-                if(playerMsg.user_id==player.user_id)
+                foreach(PlayerInfo player in GameGlobals.playergroup)
                 {
-                    player.player_type=(charType)playerMsg.player_type;
-                    player.pos_x=playerMsg.pos_x;
-                    player.pos_y=playerMsg.pos_y;
-                    player.cash=playerMsg.cash;
-                    player.coupon=playerMsg.coupon;
-                    player.cards=playerMsg.cards;
+                    if(playerMsg.user_id==player.user_id)
+                    {
+                        player.playernum=playerMsg.playernum;
+                        player.pos_x=playerMsg.pos_x;
+                        player.pos_y=playerMsg.pos_y;
+                        player.cash=playerMsg.cash;
+                        player.coupon=playerMsg.coupon;
+                        player.cards=playerMsg.cards;
+                    }
                 }
             }
         }
 
-        foreach(Character character in char_group)
+        //init player if not exist
+        init_character();
+
+        //move player
+        foreach(PlayerInfo player in GameGlobals.playergroup)
         {
-            foreach(PlayerInfo player in GameGlobals.player_group)
-            {
-                if(character.get_player_id()==player.user_id)
-                {
-                    character.move_character(player.pos_x,player.pos_y);
-                }
-            }
-        }
-        
+            string char_name="character"+((int)player.playernum);
+            Character ch=GameObject.Find(char_name).GetComponent<Character>();
+            ch.move_character(player.pos_x,player.pos_y);
+        }   
     }
 
     void game_turn_handler(int cur_turn_id)
     {
-        //if its my turn
-        if(cur_turn_id==GameGlobals.user_id)
+        if(cur_turn_id!=GameGlobals.user_id)
+            return;
+        //roll dice 
+        else if(GameGlobals.turn.action_idx%3==0)
         {
             //show message window
-            show_info("IT IS YOUR TURN",1.5f);
+            show_info("IT IS YOUR TURN! ROLL DICE FIRST",2.5f);
         }
+        //make choice
+        else if(GameGlobals.turn.action_idx%3==1)
+        {
+            show_info("WOULD YOU LIKE TO TAKE THE BLOCK?",2.5f);
+        }
+        //choose card
+        else if(GameGlobals.turn.action_idx%3==2)
+        {
+            //show message window
+            show_info("YOU CAN CHOOSE CARD NOW",2.5f);
+        }
+    }
+
+    void make_choice_handler()
+    {
+        if(GameGlobals.turn.turn_player_id!=GameGlobals.user_id)
+            return;
+        GameObject.Find("choose_panel").GetComponent<Canvas>().enabled=true;
+        choice_yes.onClick.AddListener(choice_yes_handler);
+        choice_no.onClick.AddListener(choice_no_handler);
+    }
+
+    void choice_yes_handler()
+    {
+        GameGlobals.turn.choice=true;
+        GameObject.Find("choose_panel").GetComponent<Canvas>().enabled=false;
+        choice_yes.onClick.RemoveListener(choice_yes_handler);
+        choice_no.onClick.RemoveListener(choice_no_handler);
+    }
+
+    void choice_no_handler()
+    {
+        GameGlobals.turn.choice=false;
+        GameObject.Find("choose_panel").GetComponent<Canvas>().enabled=false;
+        choice_yes.onClick.RemoveListener(choice_yes_handler);
+        choice_no.onClick.RemoveListener(choice_no_handler);
     }
 
     void flush_map_block(int pos_x,int pos_y,int change_level)
@@ -418,25 +512,14 @@ public class Game : MonoBehaviour
     {
         switch(gs)
         {
-            case gameStatus.OUT:
+            case gameStatus.GAME_CONTINUE:
             {
-                show_info("GAME OVER",1.5f);
-                break;
-            }
-            case gameStatus.WIN:
-            {
-                show_info("YOU WIN",1.5f);
-                break;
-            }
-            case gameStatus.START:
-            {
-                show_info("GAME START",1.5f);
                 break;
             }
         }
     }
 
-    void reset_game_globals()
+    void reset_game_turn_globals()
     {
         GameGlobals.turn.turn_roll_dice=false;
         GameGlobals.turn.choice=false;
@@ -448,24 +531,5 @@ public class Game : MonoBehaviour
         //flush money
         Debug.Log("Money:"+GameGlobals.player_money);
         GameObject.Find("Money").GetComponent<Text>().text="Money:"+GameGlobals.player_money;
-    }
-
-    void camera_reset()
-    {
-        float tmp=0;
-        if (Input.GetKeyDown(KeyCode.L))
-        {
-
-        }
-
-        if(Input.GetMouseButtonDown(0))
-        {
-            while(tmp<1)
-            {
-                Camera.main.transform.position = Vector3.Slerp(new Vector3(0,7,0),new Vector3(10,2,0) ,1);
-                tmp+=0.1f;
-            }
-            
-        }
     }
 }

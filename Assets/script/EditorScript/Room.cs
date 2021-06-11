@@ -120,7 +120,6 @@ public class Room : MonoBehaviour
         string get_json=GameGlobals.socketWrapper.get_received_json();
         RoomAuthJson ra=RoomAuthJson.CreateFromJSON(get_json);
 
-        //if(ra.authentic==true&&ra.user_id==GameGlobals.user_id)
         if(ra.user_id==GameGlobals.user_id)
         {
             //set user_id

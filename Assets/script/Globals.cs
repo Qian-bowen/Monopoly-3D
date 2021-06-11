@@ -7,7 +7,7 @@ namespace GlobalsNS
 {
     public class PlayerInfo
     {
-        public charType player_type;
+        public int playernum;
         public int user_id;
         public int pos_x;
         public int pos_y;
@@ -15,9 +15,9 @@ namespace GlobalsNS
         public int coupon;
         public List<int> cards;
         public PlayerInfo(){}
-        public PlayerInfo(charType type,int ui,int px,int py,int ch,int cp)
+        public PlayerInfo(int pn,int ui,int px,int py,int ch,int cp)
         {
-            player_type=type;
+            playernum=pn;
             user_id=ui;
             pos_x=px;
             pos_y=py;
@@ -28,6 +28,7 @@ namespace GlobalsNS
 
     public class TurnAction
     {
+        public int action_idx=0;//mode3==0,roll;mode3==1 make choice;mode3==2 use card
         public int turn_player_id=-3;//whose turn to play the game
         public bool turn_roll_dice=false;
         public bool choice=false;
@@ -41,16 +42,17 @@ namespace GlobalsNS
         public BLOCK_TYPE type;
     }
 
-    static class GameGlobals
+    public static class GameGlobals
     {
         public static SocketMsg socketWrapper=new SocketMsg();
+        public static int receive_time=0;
         public static int user_id=-1;
         public static int room_id=-2;
         //turn infomatio
         public static TurnAction turn=new TurnAction();
         public static int player_money=-4;
         public static List<Card> card_pool=new List<Card>();
-        public static List<PlayerInfo> player_group=new List<PlayerInfo>();
-        public static List<BlockInfo> map=new List<BlockInfo>();
+        public static List<PlayerInfo> playergroup=new List<PlayerInfo>();
+        public static List<List<BlockInfo>> map=new List<List<BlockInfo>>();
     }
 }
