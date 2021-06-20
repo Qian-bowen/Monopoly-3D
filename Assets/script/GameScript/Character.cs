@@ -10,19 +10,36 @@ namespace CharacterNS
     {    
         private int player_id=-1;
         private GameObject me;
-        private float speed = 2;
+        private float speed = 4;
         public Vector3 end;
 
         public void set_character(int pid,GameObject m,int x,int z)
         {
+            float rotate_y=0;
             player_id=pid;
             me=m;
-            if (x == 0) end = new Vector3(-2f, 0f, 2 * z);
-            else if (x == 14) end = new Vector3(30f, 0f, 2f * z);
-            else if (z == 0) end = new Vector3(2 * x, 0f, -2f); 
-            else if (z == 9) end = new Vector3(2 * x, 0f, 20f);
+            if (x == 0)
+            {
+                rotate_y=0;
+                end = new Vector3(-2f, 0f, 2 * z);
+            }
+            else if (x == 14) 
+            {
+                rotate_y=180;
+                end = new Vector3(30f, 0f, 2f * z);
+            }
+            else if (z == 0) 
+            {
+                rotate_y=270;
+                end = new Vector3(2 * x, 0f, -2f); 
+            }
+            else if (z == 9) 
+            {
+                rotate_y=90;
+                end = new Vector3(2 * x, 0f, 20f);
+            }
+            me.transform.rotation=Quaternion.Euler(0, rotate_y, 0);
             me.transform.position = end;
-            Debug.Log("init end");
         }
         public int get_player_id()
         {
@@ -31,11 +48,26 @@ namespace CharacterNS
 
         public void move_character(int x, int z)
         {
-            Debug.Log("move in character :"+player_id.ToString()+" "+x.ToString()+""+z.ToString());
-            if (x == 0) { end = new Vector3(-2f, 0f, 2 * z);return; };
-            if (x == 14) { end = new Vector3(30f, 0f, 2f * z); return; }
-            if (z == 0) { end = new Vector3(2 * x, 0f, -2f); return;}
-            if (z == 9) { end = new Vector3(2 * x, 0f, 20f); return; }
+            if (x == 0) 
+            { 
+                end = new Vector3(-2f, 0f, 2 * z);
+                return; 
+            }
+            if (x == 14) 
+            { 
+                end = new Vector3(30f, 0f, 2f * z); 
+                return; 
+            }
+            if (z == 0)
+            { 
+                end = new Vector3(2 * x, 0f, -2f); 
+                return;
+            }
+            if (z == 9) 
+            {
+                end = new Vector3(2 * x, 0f, 20f); 
+                return; 
+            }
         }
         // Start is called before the first frame update
         void Start()

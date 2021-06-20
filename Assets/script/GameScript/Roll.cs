@@ -29,6 +29,7 @@ namespace RollNS
             yield return new WaitForSeconds(3);
             int dice_val=Dice.Value("");
             GameGlobals.turn.num=dice_val;
+            //GameGlobals.turn.num=6;
             SceneManager.LoadScene("Game");
         }
 

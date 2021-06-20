@@ -33,6 +33,7 @@ namespace GlobalsNS
         public bool turn_roll_dice=false;
         public bool choice=false;
         public int num=-1;
+        //public int num=6;
     }
 
     public class BlockInfo
@@ -40,6 +41,7 @@ namespace GlobalsNS
         public int pos_x;
         public int pos_y;
         public BLOCK_TYPE type;
+        public int playernum;
     }
 
     public static class GameGlobals
@@ -47,7 +49,9 @@ namespace GlobalsNS
         public static SocketMsg socketWrapper=new SocketMsg();
         public static int receive_time=0;
         public static int user_id=-1;
-        public static int room_id=-2;
+        public static int playernum=-2;
+        public static int room_id=-3;
+        public static bool is_out=false;
         //turn infomatio
         public static TurnAction turn=new TurnAction();
         public static int player_money=-4;

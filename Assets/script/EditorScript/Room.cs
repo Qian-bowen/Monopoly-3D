@@ -34,13 +34,26 @@ public class Room : MonoBehaviour
 
     void Awake() {
         room=new List<RoomInfo>();
-        refresh_btn=GameObject.Find("refresh_btn").GetComponent<Button>();
-        refresh_btn.onClick.AddListener(refresh_room_info);
+        GameGlobals.card_pool.Clear();
+        GameGlobals.playergroup.Clear();
+        GameGlobals.map.Clear();
+        GameGlobals.is_out=false;
+        GameGlobals.receive_time=0;
+        GameGlobals.playernum=-2;
+        GameGlobals.room_id=-3;
+        GameGlobals.player_money=-4;
+
+        GameGlobals.turn.action_idx=0;
+        GameGlobals.turn.turn_player_id=-3;
+        GameGlobals.turn.turn_roll_dice=false;
+        GameGlobals.turn.choice=false;
+        GameGlobals.turn.num=-1;
+        
+
+        
 
         join_room=GameObject.Find("join_room").GetComponent<Button>();
-        join_room.onClick.AddListener(submit_room_info);
-
-        input_room=GameObject.Find("input_room").GetComponent<InputField>();
+        join_room.onClick.AddListener(this.join_random_room);
 
         GameGlobals.socketWrapper.set_callback(this.get_socket_json);
         //GameGlobals.socketWrapper.start_server();
@@ -48,8 +61,8 @@ public class Room : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        generate_room_info();
-        init_info_table();
+        // generate_room_info();
+        // init_info_table();
         //refresh_room_info();
     }
 
@@ -72,18 +85,18 @@ public class Room : MonoBehaviour
         }
     }
 
-    void init_info_table()
-    {
-        GameObject table = GameObject.Find("all_panel/room_panel/room_table");
-        for (int i = 0; i < info_line; i++)
-        {
-            GameObject row = Instantiate(line, table.transform.position-i*line.transform.position, table.transform.rotation) as GameObject;
-            RoomInfo info=room[i];
-            row.name = "row" + i;
-            row.transform.SetParent(table.transform);
-            row.transform.localScale = Vector3.one;
-        }
-    }
+    // void init_info_table()
+    // {
+    //     GameObject table = GameObject.Find("all_panel/room_panel/room_table");
+    //     for (int i = 0; i < info_line; i++)
+    //     {
+    //         GameObject row = Instantiate(line, table.transform.position-i*line.transform.position, table.transform.rotation) as GameObject;
+    //         RoomInfo info=room[i];
+    //         row.name = "row" + i;
+    //         row.transform.SetParent(table.transform);
+    //         row.transform.localScale = Vector3.one;
+    //     }
+    // }
 
     void refresh_room_info()
     {
@@ -96,6 +109,15 @@ public class Room : MonoBehaviour
             row.transform.Find("col2").GetComponent<Text>().text = "person"+info.cur_person;
             row.transform.Find("col3").GetComponent<Text>().text = info.founder_name;
         }
+    }
+
+    void join_random_room()
+    {
+        int uid=GameGlobals.user_id;
+        int rid=0;
+        RoomJson roomJson=new RoomJson("match",uid,rid);
+        string rj=Json.SaveToString(roomJson);
+        GameGlobals.socketWrapper.send_message(rj);
     }
 
     void submit_room_info()
@@ -136,10 +158,6 @@ public class Room : MonoBehaviour
     private void change_scene()
     {
         SceneManager.LoadScene("Game");
-    }
-
-    private void OnDestroy() {
-        //socket.close_socket();
     }
 
 }

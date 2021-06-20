@@ -6,7 +6,7 @@ namespace CardNS
     DEGRADE:degrade house
     STAY:stay in here for one turn
     */
-    public enum CardType{BUYBLOCK,UPGRADE,DEGRADE,STAY};
+    public enum CardType{UPGRADE=1,DEGRADE=7,ADD_MONEY=13};
     public class Card
     {
         CardType cardType;
@@ -39,14 +39,12 @@ namespace CardNS
         {
             switch(cardType)
             {
-                case CardType.BUYBLOCK:
-                return "buyblock";
                 case CardType.UPGRADE:
                 return "upgrade";
                 case CardType.DEGRADE:
                 return "degrade";
-                case CardType.STAY:
-                return "stay";
+                case CardType.ADD_MONEY:
+                return "add_money";
                 default:
                 return "";
             }
